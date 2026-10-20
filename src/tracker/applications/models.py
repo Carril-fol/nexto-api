@@ -5,7 +5,7 @@ from enum import StrEnum
 from sqlalchemy import DateTime, Enum, Index, String, Text, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from tracker.shared.database import Base
+from tracker.shared.core.database import Base
 
 class ApplicationStatus(StrEnum):
     APPLIED = "applied"

@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tracker.shared.database import get_async_db
+from tracker.shared.core.database import get_async_db
 from tracker.applications.repository import ApplicationsRepository
 from tracker.applications.service import ApplicationsService
 
