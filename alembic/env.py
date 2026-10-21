@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from tracker.applications.models import Application
+from tracker.users.models import User
 
 load_dotenv()
 
