@@ -11,6 +11,11 @@ from tracker.users.schema import UserCreate, UserRead, UserUpdate, LoginRequest,
 router = APIRouter()
 
 
+get_current_user_token = fastapi_users.authenticator.current_user_token(
+    active=True, verified=True
+)
+
+
 @router.post(
     "/auth/register",
     tags=["auth"],
@@ -63,9 +68,19 @@ async def login(
     return response
 
 
-get_current_user_token = fastapi_users.authenticator.current_user_token(
-    active=True, verified=True
-)
+@router.get("/verify-email", tags=["auth"])
+async def verify_email(
+    token: str,
+    user_manager: UserManager = Depends(get_user_manager),
+):
+    try:
+        await user_manager.verify(token)
+    except exceptions.InvalidVerifyToken:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "VERIFY_USER_BAD_TOKEN")
+    except exceptions.UserAlreadyVerified:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "VERIFY_USER_ALREADY_VERIFIED")
+
+    return {"detail": "Email verificado correctamente"}
 
 
 @router.post("/auth/logout", tags=["auth"], status_code=status.HTTP_204_NO_CONTENT)
@@ -77,10 +92,6 @@ async def logout(
     return await auth_backend.logout(strategy, user, token)
 
 
-router.include_router(
-    fastapi_users.get_verify_router(UserRead),
-    prefix="/auth", tags=["auth"],
-)
 router.include_router(
     fastapi_users.get_reset_password_router(),
     prefix="/auth", tags=["auth"],
